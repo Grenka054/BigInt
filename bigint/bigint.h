@@ -1,31 +1,73 @@
 #pragma once
 #include <cstring>
+#include <string>
 #include <iostream>
+
 class BigInt {
+
 public:
-	BigInt();
-	BigInt(int);
-	BigInt(std::string); // бросать исключение std::invalid_argument при ошибке
-	BigInt(const BigInt&);
-	~BigInt();
+	std::string num;
+	BigInt() {
+		this->num = "0";
+	};
+	BigInt(int num) {
+		this->num = std::to_string(num);
+	}
+	BigInt(std::string str) { // бросать исключение std::invalid_argument при ошибке
+		this->num = str;
+	}
+	BigInt(const BigInt&) {
 
-	BigInt& operator=(const BigInt&);  //возможно присваивание самому себе!
+	}
+	~BigInt() {
+		
+	}
 
-	BigInt operator~() const;
+	BigInt& operator_assign(const BigInt&) {  //возможно присваивание самому себе!
 
-	BigInt& operator++();
-	const BigInt operator++(int) const;
-	BigInt& operator--();
-	const BigInt operator--(int) const;
+	}
 
-	BigInt& operator+=(const BigInt&);
-	BigInt& operator*=(const BigInt&);
-	BigInt& operator-=(const BigInt&);
-	BigInt& operator/=(const BigInt&);
-	BigInt& operator^=(const BigInt&);
-	BigInt& operator%=(const BigInt&);
-	BigInt& operator&=(const BigInt&);
-	BigInt& operator|=(const BigInt&);
+	BigInt operator_neg() const {
+
+	}
+
+	BigInt& operator_inc() {
+
+	}
+	const BigInt operator_inc(int) const {
+
+	}
+	BigInt& operator_dec() {
+
+	}
+	const BigInt operator_dec(int) const {
+
+	}
+
+	BigInt& operator_plus_assign(const BigInt&) {
+
+	}
+	BigInt& operator_product_assign(const BigInt&) {
+
+	}
+	BigInt& operator_minus_assign(const BigInt&) {
+
+	}
+	BigInt& operator_div_assign(const BigInt&) {
+
+	}
+	BigInt& operator_xor_assign(const BigInt&) {
+
+	}
+	BigInt& operator_mod_assign(const BigInt&) {
+
+	}
+	BigInt& operator_and1_assign(const BigInt&) {
+
+	}
+	BigInt& operator_or1_assign(const BigInt&) {
+
+	}
 
 	BigInt operator+() const;  // unary +
 	BigInt operator-() const;  // unary -
