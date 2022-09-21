@@ -16,63 +16,66 @@ public:
 	BigInt(std::string str) { // бросать исключение std::invalid_argument при ошибке
 		this->num = str;
 	}
-	BigInt(const BigInt&) {
-
+	BigInt(const BigInt& num) {
+		this->num = num.num;
 	}
 	~BigInt() {
-		
+		//Empty?
 	}
 
-	BigInt& operator_assign(const BigInt&) {  //возможно присваивание самому себе!
-
+	BigInt& operator=(const BigInt& num) {  //возможно присваивание самому себе!
+		if (*this == num) return *this;
+		this->num = num.num; return *this;
 	}
 
-	BigInt operator_neg() const {
-
-	}
-
-	BigInt& operator_inc() {
-
-	}
-	const BigInt operator_inc(int) const {
-
-	}
-	BigInt& operator_dec() {
-
-	}
-	const BigInt operator_dec(int) const {
+	BigInt operator~() const {
 
 	}
 
-	BigInt& operator_plus_assign(const BigInt&) {
+	BigInt& operator++() { //++i
 
 	}
-	BigInt& operator_product_assign(const BigInt&) {
+	const BigInt operator++(int) const { //i++
 
 	}
-	BigInt& operator_minus_assign(const BigInt&) {
+	BigInt& operator--() {
 
 	}
-	BigInt& operator_div_assign(const BigInt&) {
-
-	}
-	BigInt& operator_xor_assign(const BigInt&) {
-
-	}
-	BigInt& operator_mod_assign(const BigInt&) {
-
-	}
-	BigInt& operator_and1_assign(const BigInt&) {
-
-	}
-	BigInt& operator_or1_assign(const BigInt&) {
+	const BigInt operator--(int) const {
 
 	}
 
-	BigInt operator+() const;  // unary +
-	BigInt operator-() const;  // unary -
+	BigInt& operator+=(const BigInt&) { //a = a + b return a
 
-	bool operator==(const BigInt&) const;
+	}
+	BigInt& operator*=(const BigInt&) {
+
+	}
+	BigInt& operator-=(const BigInt&) {
+
+	}
+	BigInt& operator/=(const BigInt&) {
+
+	}
+	BigInt& operator^=(const BigInt&) {
+
+	}
+	BigInt& operator%=(const BigInt&) {
+
+	}
+	BigInt& operator&=(const BigInt&) {
+
+	}
+	BigInt& operator|=(const BigInt&) {
+
+	}
+
+	BigInt operator+() const;  // unary + // *1
+	BigInt operator-() const;  // unary - // * -1
+
+	bool operator==(const BigInt& num) const {
+		return (this->num == num.num);
+	}
 	bool operator!=(const BigInt&) const;
 	bool operator<(const BigInt&) const;
 	bool operator>(const BigInt&) const;
@@ -85,7 +88,7 @@ public:
 	size_t size() const;  // size in bytes
 };
 
-BigInt operator+(const BigInt&, const BigInt&);
+BigInt operator+(const BigInt&, const BigInt&);  //with +=, copy BigInt
 BigInt operator-(const BigInt&, const BigInt&);
 BigInt operator*(const BigInt&, const BigInt&);
 BigInt operator/(const BigInt&, const BigInt&);
