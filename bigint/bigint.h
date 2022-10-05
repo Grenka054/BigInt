@@ -21,7 +21,7 @@ public:
 		this->num.push_back((num % 10));
 	}
 	BigInt(std::string str) { // бросать исключение std::invalid_argument при ошибке
-		for (int i{ (int)str.size() - 1 } ; i >= 0; --i)
+		for (int i{ (int)str.size() - 1 }; i >= 0; --i)
 			this->num.push_back(str[i] - '0');
 	}
 	BigInt(const BigInt& num) {
@@ -31,7 +31,7 @@ public:
 		//Empty?
 	}
 
-		BigInt& operator=(const BigInt& num) {  //возможно присваивание самому себе!
+	BigInt& operator=(const BigInt& num) {  //возможно присваивание самому себе!
 		if (*this == num) return *this;
 		this->num = num.num; return *this;
 	}
@@ -53,8 +53,19 @@ public:
 
 	}
 
-	BigInt& operator+=(const BigInt&) { //a = a + b return a
-
+	BigInt& operator+=(const BigInt& num) { //a = a + b return a
+		int maxL = std::max(this->num.size(), num.num.size()); // передлать на указатели
+		int minL = std::min(this->num.size(), num.num.size());
+		int o = 0;
+		for (int i = 0; i < minL; ++i) {
+			int sum = o + num.num[i] + this->num[i];
+			if (sum > 9) o = 1;
+			sum %= 10;
+			this->num[i] = sum;
+		}
+		for (int i = minL; i < maxL; ++i) {
+			this->num[i]; //нужно скопировать числа из наибольшего числа
+		}
 	}
 	BigInt& operator*=(const BigInt&) {
 
@@ -98,7 +109,6 @@ public:
 
 std::ostream& operator<<(std::ostream& os, const BigInt& d) {
 	for (char i = d.num.size() - 1; i >= 0; i--)
-	//for (char i : d.num)
 		std::cout << +d.num[i];
 
 	return os;
