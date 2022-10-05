@@ -2,19 +2,27 @@
 #include <cstring>
 #include <string>
 #include <iostream>
+#include <vector>
+#include <ostream>
+#include <algorithm>
 
 class BigInt {
 
 public:
-	std::string num;
+	std::vector<char> num;
 	BigInt() {
-		this->num = "0";
+		this->num.push_back(0);
 	};
 	BigInt(int num) {
-		this->num = std::to_string(num);
+		while (num % 10 == 0) {
+			this->num.push_back((num % 10));
+			num /= 10;
+		}
+		this->num.push_back((num % 10));
 	}
 	BigInt(std::string str) { // бросать исключение std::invalid_argument при ошибке
-		this->num = str;
+		for (int i{ (int)str.size() - 1 } ; i >= 0; --i)
+			this->num.push_back(str[i] - '0');
 	}
 	BigInt(const BigInt& num) {
 		this->num = num.num;
@@ -23,7 +31,7 @@ public:
 		//Empty?
 	}
 
-	BigInt& operator=(const BigInt& num) {  //возможно присваивание самому себе!
+		BigInt& operator=(const BigInt& num) {  //возможно присваивание самому себе!
 		if (*this == num) return *this;
 		this->num = num.num; return *this;
 	}
@@ -87,6 +95,14 @@ public:
 
 	size_t size() const;  // size in bytes
 };
+
+std::ostream& operator<<(std::ostream& os, const BigInt& d) {
+	for (char i = d.num.size() - 1; i >= 0; i--)
+	//for (char i : d.num)
+		std::cout << +d.num[i];
+
+	return os;
+}
 
 BigInt operator+(const BigInt&, const BigInt&);  //with +=, copy BigInt
 BigInt operator-(const BigInt&, const BigInt&);
