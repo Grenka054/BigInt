@@ -89,10 +89,15 @@ public:
 		return temp;
 	}
 	BigInt& operator--() {
-
+		this->negative = !this->negative;
+		++(*this);
+		this->negative = !this->negative;
+		return *this;
 	}
-	const BigInt operator--(int) const {
-
+	const BigInt operator--(int) { //const мешает справа
+		BigInt temp = *this;
+		--(*this);
+		return temp;
 	}
 
 	BigInt& operator+=(const BigInt& num) { //a = a + b return a

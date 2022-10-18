@@ -27,4 +27,8 @@ int main()
 	cout << "fivehundnum++++ " << fivehundnum << endl; //502
 	BigInt bignum{ "-254000000000000900" };
 	cout << bignum++ << "   " << bignum << std::endl;
+	--bignum;
+	cout << bignum << std::endl;
+	BigInt decnum{ 10 };
+	cout << decnum-- << "  " << decnum << std::endl;
 }
