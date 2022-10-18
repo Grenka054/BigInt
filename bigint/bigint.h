@@ -15,15 +15,17 @@ public:
 		this->num.push_back(0);
 		this->negative = false;
 	}
+
 	BigInt(int num) {
 		if (num < 0) this->negative = true;
 		else this->negative = false;
-		while (num % 10 == 0) {
+		while (num / 10 != 0) {
 			this->num.push_back((num % 10));
 			num /= 10;
 		}
 		this->num.push_back((num % 10));
 	}
+
 	BigInt(std::string str) { // бросать исключение std::invalid_argument при ошибке
 		this->negative = false;
 		for (int i{ (int)str.size() - 1 }; i >= 0; --i) {
@@ -33,10 +35,12 @@ public:
 			else throw std::invalid_argument("String contains extra characters.");
 		}
 	}
+
 	BigInt(const BigInt& num) {
 		this->num = num.num;
 		this->negative = num.negative;
 	}
+
 	~BigInt() {
 		//Empty?
 	}
@@ -83,17 +87,20 @@ public:
 		}
 		return *this;
 	}
+
 	const BigInt operator++(int) { //i++ //const мешает справа
 		BigInt temp = *this;
 		++(*this);
 		return temp;
 	}
+
 	BigInt& operator--() {
 		this->negative = !this->negative;
 		++(*this);
 		this->negative = !this->negative;
 		return *this;
 	}
+
 	const BigInt operator--(int) { //const мешает справа
 		BigInt temp = *this;
 		--(*this);
@@ -101,37 +108,49 @@ public:
 	}
 
 	BigInt& operator+=(const BigInt& num) { //a = a + b return a
-		int maxL = std::max(this->num.size(), num.num.size()); // передлать на указатели
-		int minL = std::min(this->num.size(), num.num.size());
-		int o = 0;
-		for (int i = 0; i < minL; ++i) {
-			int sum = o + num.num[i] + this->num[i];
-			if (sum > 9) o = 1;
+		int ten = 0, i;
+		for (i = 0; i < this->num.size(); ++i) {
+			char second = i < num.num.size() ? num.num[i] : 0;
+			int sum = ten + second + this->num[i];
+			ten = sum > 9 ? 1 : 0;
 			sum %= 10;
 			this->num[i] = sum;
 		}
-		for (int i = minL; i < maxL; ++i) {
-			this->num[i]; //нужно скопировать числа из наибольшего числа
+		for (; i < num.num.size(); ++i) {
+			int sum = num.num[i] + ten;
+			ten = sum > 9 ? 1 : 0;
+			sum %= 10;
+			this->num.push_back(sum);
 		}
+		if (ten)
+			this->num.push_back(1);
+		return *this;
 	}
+
 	BigInt& operator*=(const BigInt&) {
 
 	}
+
 	BigInt& operator-=(const BigInt&) {
 
 	}
+
 	BigInt& operator/=(const BigInt&) {
 
 	}
+
 	BigInt& operator^=(const BigInt&) {
 
 	}
+
 	BigInt& operator%=(const BigInt&) {
 
 	}
+
 	BigInt& operator&=(const BigInt&) {
 
 	}
+
 	BigInt& operator|=(const BigInt&) {
 
 	}
