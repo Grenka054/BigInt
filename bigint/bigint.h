@@ -53,10 +53,40 @@ public:
 	}
 
 	BigInt& operator++() { //++i
-
+		if (this->negative) {
+			--this->num[0];
+			for (size_t i = 0; i < this->num.size(); i++)
+			{
+				if (this->num[i] < 0) {
+					this->num[i] = 9;
+					--this->num[i + 1];
+				}
+				else {
+					if (this->num[this->num.size() - 1] == 0)
+						this->num.pop_back();
+					break;
+				}
+			}
+		}
+		else {
+			++this->num[0];
+			for (size_t i = 0; i < this->num.size(); i++)
+			{
+				if (this->num[i] > 9) {
+					this->num[i] = 0;
+					if (this->num.size() < i + 1)
+						this->num.push_back(0);
+					++this->num[i + 1];
+				}
+				else break;
+			}
+		}
+		return *this;
 	}
-	const BigInt operator++(int) const { //i++
-
+	const BigInt operator++(int) { //i++ //const мешает справа
+		BigInt temp = *this;
+		++(*this);
+		return temp;
 	}
 	BigInt& operator--() {
 
