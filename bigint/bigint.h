@@ -10,10 +10,14 @@ class BigInt {
 
 public:
 	std::vector<char> num;
+	bool negative;
 	BigInt() {
 		this->num.push_back(0);
-	};
+		this->negative = false;
+	}
 	BigInt(int num) {
+		if (num < 0) this->negative = true;
+		else this->negative = false;
 		while (num % 10 == 0) {
 			this->num.push_back((num % 10));
 			num /= 10;
@@ -21,11 +25,17 @@ public:
 		this->num.push_back((num % 10));
 	}
 	BigInt(std::string str) { // бросать исключение std::invalid_argument при ошибке
-		for (int i{ (int)str.size() - 1 }; i >= 0; --i)
-			this->num.push_back(str[i] - '0');
+		this->negative = false;
+		for (int i{ (int)str.size() - 1 }; i >= 0; --i) {
+			if (str[i] - '0' <= 9 && str[i] - '0' >= 0)
+				this->num.push_back(str[i] - '0');
+			else if (str[i] == '-') this->negative = true;
+			else throw std::invalid_argument("String contains extra characters.");
+		}
 	}
 	BigInt(const BigInt& num) {
 		this->num = num.num;
+		this->negative = num.negative;
 	}
 	~BigInt() {
 		//Empty?
@@ -33,7 +43,9 @@ public:
 
 	BigInt& operator=(const BigInt& num) {  //возможно присваивание самому себе!
 		if (*this == num) return *this;
-		this->num = num.num; return *this;
+		this->num = num.num;
+		this->negative = num.negative;
+		return *this;
 	}
 
 	BigInt operator~() const {
@@ -108,9 +120,9 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const BigInt& d) {
+	if (d.negative) std::cout << "-";
 	for (char i = d.num.size() - 1; i >= 0; i--)
 		std::cout << +d.num[i];
-
 	return os;
 }
 
