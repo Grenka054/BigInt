@@ -48,6 +48,13 @@ int main()
 	assert((BigInt)"1999" == (BigInt)"1999");
 	assert((BigInt)"-1999" != (BigInt)"1999");
 
+	b1 += (BigInt)"-8000";
+	assert(b1 == (BigInt)"-6001");
+	assert((BigInt)"159155568" + (BigInt)"250000534" == (BigInt)"409156102");
+	assert((BigInt)"-159155568" + (BigInt)"250000534" == (BigInt)"90844966");
+	assert((BigInt)"159155568" + (BigInt)"-250000534" == (BigInt)"-90844966");
+	assert((BigInt)"-65416545413365116514" + (BigInt)"-31" == (BigInt)"-65416545413365116545");
+	assert((BigInt)"1999" < (BigInt)"8000");
 	assert(!((BigInt)"20" < (BigInt)"-1999"));
 	assert(!((BigInt)"200000" < (BigInt)"-1999"));
 	assert((BigInt)"-200000" < (BigInt)"-1999");

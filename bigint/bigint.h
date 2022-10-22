@@ -5,6 +5,7 @@
 #include <vector>
 #include <ostream>
 #include <algorithm>
+#include <cmath>
 
 class BigInt {
 
@@ -19,7 +20,7 @@ public:
 	BigInt(int num) {
 		this->negative = false;
 		if (num < 0) this->negative = true;
-		num = abs(num);
+		num = std::abs(num);
 		while (num / 10 != 0) {
 			this->num.push_back((num % 10));
 			num /= 10;
@@ -33,7 +34,7 @@ public:
 		for (int i{ (int)str.size() - 1 }; i >= 0; --i) {
 			if (str[i] - '0' <= 9 && str[i] - '0' >= 0)
 				this->num.push_back(str[i] - '0');
-			else if (i == 0 && str[0] == '-') continue;
+			else if (i == 0 && (str[0] == '-' || str[0] == '+')) continue;
 			else throw std::invalid_argument("String contains extra characters.");
 		}
 	}
@@ -129,16 +130,38 @@ public:
 				this->num.push_back(1);
 		}
 		else {
-			const BigInt* min, * max;
-			if (this->negative) {
-				min = this;
-				max = &num;
-				//b-a
+			BigInt min, max;
+			if ((*this).abs() <= num.abs()) {
+				min = (*this).abs();
+				max = num.abs();
+				if (this->negative) this->negative = false;
+				else this->negative = true;
 			}
 			else {
-				//a-=b
-				*this -= num;
+				min = num.abs();
+				max = (*this).abs();
+				if (*this < num) this->negative = true;
+				else this->negative = false;
 			}
+			if ((*this).abs() == num.abs()) this->negative = false;
+			for (size_t i = min.num.size(); i < max.num.size(); i++)
+				min.num.push_back('0');
+			for (size_t i = 0; i < max.num.size(); i++)
+			{
+				this->num[i] = max.num[i] - min.num[i];
+			}
+			for (size_t i = 0; i < max.num.size() - 1; i++)
+			{
+				if (this->num[i] < 0) {
+					this->num[i] += 10;
+					--this->num[i + 1];
+				}
+			}
+			for (int i = max.num.size() - 1; i >= 0; i--)
+				if (this->num[i] == 0)
+					this->num.pop_back();
+				else break;
+			if ((*this).abs() == (BigInt)0) this->negative = false;
 		}
 		return *this;
 	}
@@ -148,10 +171,7 @@ public:
 	}
 
 	BigInt& operator-=(const BigInt& num) {
-		if (this->negative == num.negative) {
-			return *this += num;
-		}
-		//if ()
+		return *this += -num;
 	}
 
 	BigInt& operator/=(const BigInt& num) {
@@ -175,11 +195,12 @@ public:
 	}
 
 	BigInt operator+() {  // unary + // *1
-		this->negative = false;
+		return *this;
 	}
 
 	BigInt operator-() {  // unary - // * -1
 		this->negative = true;
+		return *this;
 	}
 
 	bool operator==(const BigInt& num) const {
@@ -196,6 +217,8 @@ public:
 				for (int i = num.num.size() - 1; i >= 0; i--) {
 					if (this->num[i] > num.num[i])
 						return false;
+					if (this->num[i] < num.num[i])
+						return true;
 				}
 			else return this->negative && this->num.size() > num.num.size();
 		}
@@ -210,6 +233,8 @@ public:
 				for (int i = num.num.size() - 1; i >= 0; i--) {
 					if (this->num[i] < num.num[i])
 						return false;
+					if (this->num[i] > num.num[i])
+						return true;
 				}
 			else return this->negative && this->num.size() < num.num.size();
 		}
@@ -245,6 +270,11 @@ public:
 	size_t size() const { // size in bytes
 		return this->num.size() + sizeof(this->negative);
 	}
+private:
+	BigInt abs() const {
+		BigInt res = *this; res.negative = false;
+		return res;
+	}
 };
 
 std::ostream& operator<<(std::ostream& os, const BigInt& d) {
@@ -254,7 +284,11 @@ std::ostream& operator<<(std::ostream& os, const BigInt& d) {
 	return os;
 }
 
-BigInt operator+(const BigInt&, const BigInt&);  //with +=, copy BigInt
+BigInt operator+(const BigInt& a, const BigInt& b) { //with +=, copy BigInt
+	BigInt temp = a;
+	return temp += b;
+}
+
 BigInt operator-(const BigInt&, const BigInt&);
 BigInt operator*(const BigInt&, const BigInt&);
 BigInt operator/(const BigInt&, const BigInt&);
