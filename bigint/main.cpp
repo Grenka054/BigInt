@@ -1,43 +1,74 @@
 #include <iostream>
+#include <cassert>
 #include "bigint.h"
 
 int main()
 {
 	using namespace std;
-	BigInt nullnum{ };
-	cout << nullnum << endl;
-	BigInt fivehundnum{ 500 };
-	BigInt eighthundnum{ "-800" };
-	BigInt eighthundnum2(eighthundnum);
-	nullnum = nullnum;
-	cout << "nullnum " << nullnum << endl; //0
-	nullnum = fivehundnum;
-	cout << "nullnum " << nullnum << endl; //0
-	cout << "fivehundnum " << fivehundnum << endl; //500
-	cout << "eighthundnum " << eighthundnum << endl; //-800
-	cout << "eighthundnum2 " << eighthundnum2 << endl; //-800
-	++eighthundnum2;
-	cout << "eighthundnum2++ " << eighthundnum2 << endl; //-799
-	++eighthundnum2;
-	cout << "eighthundnum2++++ " << eighthundnum2 << endl; //-798
-	cout << "eighthundnum " << eighthundnum << endl; //-800
-	++fivehundnum;
-	cout << "fivehundnum++ " << fivehundnum << endl; //501
-	++fivehundnum;
-	cout << "fivehundnum++++ " << fivehundnum << endl; //502
+	BigInt b0{ };
+	assert(b0 == (BigInt)0);
+	BigInt b500{ 500 };
+	BigInt m500{ -500 };
+	BigInt m800{ "-800" };
+	BigInt m800_2(m800);
+	b0 = b0;
+	assert(b0 == (BigInt)"0");
+	b0 = b500;
+	assert(b0 == (BigInt)"500");
+	assert(m500 == (BigInt)"-500");
+	assert(b500 == (BigInt)"500");
+	assert(m800 == (BigInt)"-800");
+	assert(m800_2 == (BigInt)"-800");
+	++m800_2;
+	assert(m800_2 == (BigInt)"-799");
+	++m800_2;
+	assert(m800_2 == (BigInt)"-798");
+	assert(m800 == (BigInt)"-800");
+
+	++b500;
+	assert(b500 == (BigInt)"501");
+	++b500;
+	assert(b500 == (BigInt)"502");
 	BigInt bignum{ "-254000000000000900" };
-	cout << bignum++ << "   " << bignum << endl;
+	assert(bignum++ == (BigInt)"-254000000000000900");
+	assert(bignum == (BigInt)"-254000000000000899");
+	//BigInt temp = bignum++;
+	//assert(bignum == temp + (BigInt)"1");
 	--bignum;
-	cout << bignum << std::endl;
-	BigInt decnum{ 10 };
-	cout << decnum-- << "  " << decnum << endl;
-	BigInt b999_1{ 999 }, b999_2{ 999 }, b1{1};
-	cout << b999_1 << " += " << b999_2 << " = ";
-	b999_1 += b999_2;
-	cout << b999_1 << endl;
-	cout << b1 << " += " << b999_2 << " = ";
-	b1 += b999_2;
-	cout << b1 << endl;
-	b1 += b999_2;
-	cout << b1 << endl;
+	assert(bignum == (BigInt)"-254000000000000900");
+	BigInt d10{ 10 };
+	cout << d10-- << "  " << d10 << endl;
+	BigInt b999_1{ 999 }, b1{1};
+	b999_1 += (BigInt)999;
+	assert(b999_1 == (BigInt)"1998");
+	b1 += (BigInt)999;
+	assert(b1 == (BigInt)"1000");
+	b1 += (BigInt)999;
+	assert(b1 == (BigInt)"1999");
+	assert((BigInt)"1999" == (BigInt)"1999");
+	assert((BigInt)"-1999" != (BigInt)"1999");
+
+	assert(!((BigInt)"20" < (BigInt)"-1999"));
+	assert(!((BigInt)"200000" < (BigInt)"-1999"));
+	assert((BigInt)"-200000" < (BigInt)"-1999");
+	assert(!((BigInt)"-200000" < (BigInt)"-99991999"));
+	assert((BigInt)"-200000" < (BigInt)"0");
+	assert(!((BigInt)"0" < (BigInt)"0"));
+
+	assert((BigInt)"20" > (BigInt)"-1999");
+	assert((BigInt)"200000" > (BigInt)"-1999");
+	assert(!((BigInt)"-200000" > (BigInt)"-1999"));
+	assert((BigInt)"-200000" > (BigInt)"-99991999");
+	assert(!((BigInt)"-200000" > (BigInt)"0"));
+	assert(!((BigInt)"0" > (BigInt)"0"));
+
+	assert((BigInt)"-200000" <= (BigInt)"0");
+	assert((BigInt)"0" <= (BigInt)"0");
+	assert(!((BigInt)"-200000" >= (BigInt)"0"));
+	assert((BigInt)"0" >= (BigInt)"0");
+	assert(int((BigInt)"20") == 20);
+	assert(int((BigInt)"-205478") == -205478);
+	assert(string((BigInt)"20") == "20");
+	assert(string((BigInt)"-205478") == "-205478");
+
 }
