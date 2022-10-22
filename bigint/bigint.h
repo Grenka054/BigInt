@@ -145,7 +145,7 @@ public:
 			}
 			if ((*this).abs() == num.abs()) this->negative = false;
 			for (size_t i = min.num.size(); i < max.num.size(); i++)
-				min.num.push_back('0');
+				min.num.push_back(0);
 			for (size_t i = 0; i < max.num.size(); i++)
 			{
 				this->num[i] = max.num[i] - min.num[i];
@@ -167,7 +167,7 @@ public:
 	}
 
 	BigInt& operator*=(const BigInt& num) {
-
+		return *this;
 	}
 
 	BigInt& operator-=(const BigInt& num) {
@@ -175,23 +175,23 @@ public:
 	}
 
 	BigInt& operator/=(const BigInt& num) {
-
+		return *this;
 	}
 
-	BigInt& operator^=(const BigInt&) {
-
+	BigInt& operator^=(const BigInt& num) {
+		return *this;
 	}
 
-	BigInt& operator%=(const BigInt&) {
-
+	BigInt& operator%=(const BigInt& num) {
+		return *this -= *this / num;
 	}
 
-	BigInt& operator&=(const BigInt&) {
-
+	BigInt& operator&=(const BigInt& num) {
+		return *this;
 	}
 
-	BigInt& operator|=(const BigInt&) {
-
+	BigInt& operator|=(const BigInt& num) {
+		return *this;
 	}
 
 	BigInt operator+() {  // unary + // *1
@@ -289,10 +289,37 @@ BigInt operator+(const BigInt& a, const BigInt& b) { //with +=, copy BigInt
 	return temp += b;
 }
 
-BigInt operator-(const BigInt&, const BigInt&);
-BigInt operator*(const BigInt&, const BigInt&);
-BigInt operator/(const BigInt&, const BigInt&);
-BigInt operator^(const BigInt&, const BigInt&);
-BigInt operator%(const BigInt&, const BigInt&);
-BigInt operator&(const BigInt&, const BigInt&);
-BigInt operator|(const BigInt&, const BigInt&);
+BigInt operator-(const BigInt& a, const BigInt& b) {
+	BigInt temp = a;
+	return temp -= b;
+}
+
+BigInt operator*(const BigInt& a, const BigInt& b) {
+	BigInt temp = a;
+	return temp *= b;
+}
+
+BigInt operator/(const BigInt& a, const BigInt& b) {
+	BigInt temp = a;
+	return temp /= b;
+}
+
+BigInt operator^(const BigInt& a, const BigInt& b) {
+	BigInt temp = a;
+	return temp ^= b;
+}
+
+BigInt operator%(const BigInt& a, const BigInt& b) {
+	BigInt temp = a;
+	return temp %= b;
+}
+
+BigInt operator&(const BigInt& a, const BigInt& b) {
+	BigInt temp = a;
+	return temp &= b;
+}
+
+BigInt operator|(const BigInt& a, const BigInt& b) {
+	BigInt temp = a;
+	return temp |= b;
+}

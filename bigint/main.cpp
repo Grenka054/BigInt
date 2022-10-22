@@ -32,10 +32,10 @@ int main()
 	BigInt bignum{ "-254000000000000900" };
 	assert(bignum++ == (BigInt)"-254000000000000900");
 	assert(bignum == (BigInt)"-254000000000000899");
-	//BigInt temp = bignum++;
-	//assert(bignum == temp + (BigInt)"1");
+	BigInt temp = bignum++;
+	assert(bignum == temp + (BigInt)"1");
 	--bignum;
-	assert(bignum == (BigInt)"-254000000000000900");
+	assert(bignum == (BigInt)"-254000000000000899");
 	BigInt d10{ 10 };
 	cout << d10-- << "  " << d10 << endl;
 	BigInt b999_1{ 999 }, b1{1};
