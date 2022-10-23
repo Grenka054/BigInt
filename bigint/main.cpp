@@ -5,10 +5,15 @@
 int main()
 {
 	using namespace std;
+	assert((BigInt)50 % (BigInt)-6 == (BigInt)2);
+	assert((BigInt)-50 % (BigInt)6 == (BigInt)-2);
+	assert((BigInt)-50 % (BigInt)-6 == (BigInt)(- 50 % -6));
+	assert((BigInt)50 % (BigInt)6 == (BigInt)(50 % 6));
 	assert((BigInt)-132 / (BigInt)18 == (BigInt)-7);
 	assert((BigInt)132 / (BigInt)7 == (BigInt)18);
 	bool exceptionThrown = false;
-	try { (BigInt)132 / (BigInt)0; } catch (overflow_error&) { exceptionThrown = true; }
+	try { (BigInt)132 / (BigInt)0; }
+	catch (overflow_error&) { exceptionThrown = true; }
 	assert(exceptionThrown);
 	BigInt b57{ -57 };
 	b57 *= (BigInt)-121;
@@ -46,8 +51,6 @@ int main()
 	assert(bignum == temp + (BigInt)"1");
 	--bignum;
 	assert(bignum == (BigInt)"-254000000000000899");
-	BigInt d10{ 10 };
-	cout << d10-- << "  " << d10 << endl;
 	BigInt b999_1{ 999 }, b1{ 1 };
 	b999_1 += (BigInt)999;
 	assert(b999_1 == (BigInt)"1998");

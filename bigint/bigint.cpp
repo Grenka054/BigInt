@@ -217,7 +217,10 @@ BigInt& BigInt::operator^=(const BigInt& num) {
 }
 
 BigInt& BigInt::operator%=(const BigInt& num) {
-	return *this -= *this / num;
+	bool neg = this->negative;
+	*this -= (*this / num) * num;
+	this->negative = neg;
+	return *this;
 }
 
 BigInt& BigInt::operator&=(const BigInt& num) {
