@@ -5,6 +5,12 @@
 int main()
 {
 	using namespace std;
+	BigInt b57{ -57 };
+	b57 *= (BigInt)-121;
+	assert(b57 == (BigInt)6897);
+	assert((BigInt)57 * (BigInt)121 == (BigInt)6897);
+	assert((BigInt)57 * (BigInt)-121 == (BigInt)-6897);
+	assert((BigInt)-1210 * (BigInt)5700 == (BigInt)-6897000);
 	BigInt b0{ };
 	assert(b0 == (BigInt)0);
 	BigInt b500{ 500 };
@@ -54,6 +60,10 @@ int main()
 	assert((BigInt)"-159155568" + (BigInt)"250000534" == (BigInt)"90844966");
 	assert((BigInt)"159155568" + (BigInt)"-250000534" == (BigInt)"-90844966");
 	assert((BigInt)"-65416545413365116514" + (BigInt)"-31" == (BigInt)"-65416545413365116545");
+	assert((BigInt)"159155568" - (BigInt)"-250000534" == (BigInt)"409156102");
+	assert((BigInt)"-159155568" - (BigInt)"-250000534" == (BigInt)"90844966");
+	assert((BigInt)"159155568" - (BigInt)"250000534" == (BigInt)"-90844966");
+	assert((BigInt)"-65416545413365116514" - (BigInt)"31" == (BigInt)"-65416545413365116545");
 	assert((BigInt)"1999" < (BigInt)"8000");
 	assert(!((BigInt)"20" < (BigInt)"-1999"));
 	assert(!((BigInt)"200000" < (BigInt)"-1999"));

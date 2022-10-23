@@ -167,6 +167,7 @@ public:
 	}
 
 	BigInt& operator*=(const BigInt& num) {
+		*this = *this * num;
 		return *this;
 	}
 
@@ -295,8 +296,26 @@ BigInt operator-(const BigInt& a, const BigInt& b) {
 }
 
 BigInt operator*(const BigInt& a, const BigInt& b) {
-	BigInt temp = a;
-	return temp *= b;
+	BigInt res{ 0 };
+	for (size_t i = 0; i < a.num.size(); i++)
+	{
+		BigInt temp{ };
+		temp.num.clear();
+		int tens = 0;
+		for (size_t n = 0; n < i; n++)
+			temp.num.push_back(0);
+		for (size_t j = 0; j < b.num.size(); j++)
+		{
+			int product = a.num[i] * b.num[j];
+			temp.num.push_back(tens + product % 10);
+			tens = product / 10;
+		}
+		if (tens) temp.num.push_back(tens);
+		res += temp;
+		temp.num.clear();
+	}
+	res.negative = a.negative ^ b.negative;
+	return res;
 }
 
 BigInt operator/(const BigInt& a, const BigInt& b) {
