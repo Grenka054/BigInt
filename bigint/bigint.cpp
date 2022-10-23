@@ -58,7 +58,7 @@ BigInt& BigInt::operator=(const BigInt& num) {
 }
 
 BigInt BigInt::operator~() const {
-	return *this; // !
+	return *this; // bitwise NOT !
 }
 
 BigInt& BigInt::operator++() { //++i
@@ -85,7 +85,10 @@ BigInt& BigInt::operator++() { //++i
 				this->num[i] = 0;
 				if (this->num.size() < i + 1)
 					this->num.push_back(0);
-				++this->num[i + 1];
+				if (i + 1 >= this->num.size())
+					this->num.push_back(1);
+				else
+					++this->num[i + 1];
 			}
 			else break;
 		}
@@ -93,9 +96,9 @@ BigInt& BigInt::operator++() { //++i
 	return *this;
 }
 
-const BigInt BigInt::operator++(int) { //i++ //const мешает справа
+const BigInt BigInt::operator++(int) const { //i++
 	BigInt temp = *this;
-	++(*this);
+	++(const_cast<BigInt&>(*this));
 	return temp;
 }
 
@@ -106,9 +109,9 @@ BigInt& BigInt::operator--() {
 	return *this;
 }
 
-const BigInt BigInt::operator--(int) { //const мешает справа
+const BigInt BigInt::operator--(int) const { //const мешает справа
 	BigInt temp = *this;
-	--(*this);
+	--(const_cast<BigInt&>(*this));
 	return temp;
 }
 
@@ -146,8 +149,10 @@ BigInt& BigInt::operator+=(const BigInt& num) { //a = a + b return a
 			else this->negative = false;
 		}
 		if ((*this).abs() == num.abs()) this->negative = false;
-		for (size_t i = min.num.size(); i < max.num.size(); i++)
+		for (size_t i = min.num.size(); i < max.num.size(); i++) {
 			min.num.push_back(0);
+			if (i >= this->num.size()) this->num.push_back(0);
+		}
 		for (size_t i = 0; i < max.num.size(); i++)
 		{
 			this->num[i] = max.num[i] - min.num[i];
@@ -193,11 +198,18 @@ BigInt& BigInt::operator*=(const BigInt& num) {
 }
 
 BigInt& BigInt::operator-=(const BigInt& num) {
-	return *this += -num; // !
+	return *this += -num;
 }
 
 BigInt& BigInt::operator/=(const BigInt& num) {
-	return *this; // !
+	if (num == (BigInt)0) throw std::overflow_error("Divide by zero exception");
+
+	BigInt dividend = this->abs(), divisor = num.abs(), res{};
+	for (BigInt i = dividend - divisor; !i.negative; i -= divisor)
+		++res;
+	res.negative = this->negative ^ num.negative;
+	*this = res;
+	return *this;
 }
 
 BigInt& BigInt::operator^=(const BigInt& num) {
@@ -244,7 +256,8 @@ bool BigInt::operator<(const BigInt& num) const {
 				if (this->num[i] < num.num[i])
 					return true;
 			}
-		else return this->negative && this->num.size() > num.num.size();
+		else return (this->negative && this->num.size() > num.num.size()) ||
+			(!this->negative && this->num.size() < num.num.size());
 	}
 	if (this->negative) return true;
 	return false;
@@ -260,14 +273,17 @@ bool BigInt::operator>(const BigInt& num) const {
 				if (this->num[i] > num.num[i])
 					return true;
 			}
-		else return this->negative && this->num.size() < num.num.size();
+		else return (this->negative && this->num.size() < num.num.size()) ||
+			(!this->negative && this->num.size() > num.num.size());
 	}
 	if (num.negative) return true;
 	return false;
 }
+
 bool BigInt::operator<=(const BigInt& num) const {
 	return (*this < num || *this == num);
 }
+
 bool BigInt::operator>=(const BigInt& num) const {
 	return (*this > num || *this == num);
 }
@@ -295,6 +311,7 @@ BigInt::operator std::string() const {
 size_t BigInt::size() const { // size in bytes
 	return this->num.size() + sizeof(this->negative);
 }
+
 BigInt BigInt::abs() const {
 	BigInt res = *this; res.negative = false;
 	return res;
