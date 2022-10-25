@@ -5,16 +5,47 @@
 int main()
 {
 	using namespace std;
-	assert((BigInt)50 % (BigInt)-6 == (BigInt)2);
-	assert((BigInt)-50 % (BigInt)6 == (BigInt)-2);
-	assert((BigInt)-50 % (BigInt)-6 == (BigInt)(- 50 % -6));
-	assert((BigInt)50 % (BigInt)6 == (BigInt)(50 % 6));
+	BigInt temp;
+	long long a, b, res;
+	a = 780505, b = 98;
+	temp = BigInt(a) | BigInt(b); // 18 sec
+	assert(temp == BigInt(a | b));
+	bool exceptionThrown = false;
+	a = 100, b = 60;
+	temp = BigInt(a) | BigInt(b);
+	res = a | b;
+	assert(temp == BigInt(res));
+	temp = BigInt(a) & BigInt(b);
+	res = a & b;
+	assert(temp == BigInt(res));
+	temp = BigInt(a) ^ BigInt(b);
+	res = a ^ b;
+	assert(temp == BigInt(res));
+	a = 0, b = 0;
+	res = a | b;
+	temp = BigInt(a) | BigInt(b);
+	assert(temp == BigInt(res));
+	temp = BigInt(a) & BigInt(b);
+	res = a & b;
+	assert(temp == BigInt(res));
+	temp = BigInt(a) ^ BigInt(b);
+	res = a ^ b;
+	assert(temp == BigInt(res));
+	a = -2, b = 1;
+	try { temp = BigInt(a) | BigInt(b); }
+	catch (std::invalid_argument) { exceptionThrown = true; }
+	assert(temp == BigInt(res));
+	assert((BigInt)0 / (BigInt)18 == (BigInt)0);
 	assert((BigInt)-132 / (BigInt)18 == (BigInt)-7);
 	assert((BigInt)132 / (BigInt)7 == (BigInt)18);
-	bool exceptionThrown = false;
 	try { (BigInt)132 / (BigInt)0; }
 	catch (overflow_error&) { exceptionThrown = true; }
 	assert(exceptionThrown);
+	exceptionThrown = false;
+	assert((BigInt)50 % (BigInt)-6 == (BigInt)2);
+	assert((BigInt)-50 % (BigInt)6 == (BigInt)-2);
+	assert((BigInt)-50 % (BigInt)-6 == (BigInt)(-50 % -6));
+	assert((BigInt)50 % (BigInt)6 == (BigInt)(50 % 6));
 	BigInt b57{ -57 };
 	b57 *= (BigInt)-121;
 	assert(b57 == (BigInt)6897);
@@ -44,13 +75,22 @@ int main()
 	assert(b500 == (BigInt)"501");
 	++b500;
 	assert(b500 == (BigInt)"502");
-	BigInt bignum{ "-254000000000000900" };
-	assert(bignum++ == (BigInt)"-254000000000000900");
-	assert(bignum == (BigInt)"-254000000000000899");
-	BigInt temp = bignum++;
-	assert(bignum == temp + (BigInt)"1");
-	--bignum;
-	assert(bignum == (BigInt)"-254000000000000899");
+	BigInt bigmnum{ "-254000000000000900000" };
+	try { a = int(bigmnum); }
+	catch (out_of_range&) { exceptionThrown = true; }
+	assert(exceptionThrown);
+	exceptionThrown = false;
+	try { a = long long(bigmnum); }
+	catch (out_of_range&) { exceptionThrown = true;}
+	assert(exceptionThrown);
+	assert(long long(BigInt("-25400000000000")) == -25400000000000);
+	exceptionThrown = false;
+	assert(bigmnum++ == (BigInt)"-254000000000000900000");
+	assert(bigmnum == (BigInt)"-254000000000000899999");
+	temp = bigmnum++;
+	assert(bigmnum == temp + (BigInt)"1");
+	--bigmnum;
+	assert(bigmnum == (BigInt)"-254000000000000899999");
 	BigInt b999_1{ 999 }, b1{ 1 };
 	b999_1 += (BigInt)999;
 	assert(b999_1 == (BigInt)"1998");

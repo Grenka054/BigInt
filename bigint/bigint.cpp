@@ -6,6 +6,38 @@
 #include <ostream>
 #include <cmath>
 
+std::vector<char> dec_to_bin(const BigInt& num) {
+	if (num.get_negative()) throw std::invalid_argument("Negative argument!");
+	BigInt b_int = num.abs();
+	std::vector<char> bin;
+	while (b_int != (BigInt)0) {
+		bin.push_back(b_int.get_num()[0] % 2);
+		b_int /= (BigInt)2;
+	}
+	if (bin.size() == 0) bin.push_back(0);
+	return bin;
+}
+
+BigInt bin_to_dec(const std::vector<char> num) {
+	std::vector<char> bin = num;
+	BigInt b_int{ num[0] }, pow{ 1 };
+	for (size_t i = 1; i < num.size(); i++)
+	{
+		pow *= (BigInt)2;
+		if(num[i]) b_int += pow;
+	}
+	return b_int;
+}
+
+void push_nulls(std::vector<char>& a, std::vector<char>& b) {
+	if (a.size() < b.size())
+		for (size_t i = a.size(); i < b.size(); i++)
+			a.push_back(0);
+	else
+		for (size_t i = b.size(); i < a.size(); i++)
+			b.push_back(0);
+}
+
 std::vector<char> BigInt::get_num() const {
 	return this->num;
 }
@@ -20,6 +52,10 @@ BigInt::BigInt() {
 }
 
 BigInt::BigInt(int num) {
+	*this = BigInt(long long(num));
+}
+
+BigInt::BigInt(long long num) {
 	this->negative = false;
 	if (num < 0) this->negative = true;
 	num = std::abs(num);
@@ -42,12 +78,13 @@ BigInt::BigInt(std::string str) {
 }
 
 BigInt::BigInt(const BigInt& num) {
+	this->num.clear();
 	this->num = num.num;
 	this->negative = num.negative;
 }
 
 BigInt::~BigInt() {
-	//Empty? // !
+	this->num.clear();
 }
 
 BigInt& BigInt::operator=(const BigInt& num) {
@@ -58,7 +95,12 @@ BigInt& BigInt::operator=(const BigInt& num) {
 }
 
 BigInt BigInt::operator~() const {
-	return *this; // bitwise NOT !
+	std::vector<char> thisBin{ dec_to_bin(*this) };
+	for (size_t i = 0; i < thisBin.size(); i++)
+		thisBin[i] = ~thisBin[i];
+	BigInt res = bin_to_dec(thisBin);
+	thisBin.clear();
+	return res;
 }
 
 BigInt& BigInt::operator++() { //++i
@@ -213,7 +255,13 @@ BigInt& BigInt::operator/=(const BigInt& num) {
 }
 
 BigInt& BigInt::operator^=(const BigInt& num) {
-	return *this; // !
+	std::vector<char> thisBin{ dec_to_bin(*this) }, numBin{ dec_to_bin(num) };
+	push_nulls(thisBin, numBin);
+	for (size_t i = 0; i < thisBin.size(); i++)
+		thisBin[i] ^= numBin[i];
+	*this = bin_to_dec(thisBin);
+	thisBin.clear(); numBin.clear();
+	return *this;
 }
 
 BigInt& BigInt::operator%=(const BigInt& num) {
@@ -224,11 +272,23 @@ BigInt& BigInt::operator%=(const BigInt& num) {
 }
 
 BigInt& BigInt::operator&=(const BigInt& num) {
-	return *this; // !
+	std::vector<char> thisBin{ dec_to_bin(*this) }, numBin{ dec_to_bin(num) };
+	push_nulls(thisBin, numBin);
+	for (size_t i = 0; i < thisBin.size(); i++)
+		thisBin[i] &= numBin[i];
+	*this = bin_to_dec(thisBin);
+	thisBin.clear(); numBin.clear();
+	return *this;
 }
 
 BigInt& BigInt::operator|=(const BigInt& num) {
-	return *this; // !
+	std::vector<char> thisBin{ dec_to_bin(*this) }, numBin{ dec_to_bin(num) };
+	push_nulls(thisBin, numBin);
+	for (size_t i = 0; i < thisBin.size(); i++)
+		thisBin[i] |= numBin[i];
+	*this = bin_to_dec(thisBin);
+	thisBin.clear(); numBin.clear();
+	return *this;
 }
 
 BigInt BigInt::operator+() const {  // unary + // *1
@@ -292,11 +352,21 @@ bool BigInt::operator>=(const BigInt& num) const {
 }
 
 BigInt::operator int() const {
+	if (*this > BigInt(INT32_MAX) || *this < BigInt(INT32_MIN))
+		throw std::out_of_range("The number " + std::string(*this) + " is out of range int");
 	int res = 0;
 	for (size_t i = 0; i < this->num.size(); i++)
-	{
 		res += this->num[i] * int(pow(10, i));
-	}
+	if (this->negative) res *= -1;
+	return res;
+}
+
+BigInt::operator long long int() const {
+	if (*this > BigInt(INT64_MAX) || *this < BigInt(INT64_MIN))
+		throw std::out_of_range("The number " + std::string(*this) + " is out of range long long int");
+	long long res = 0;
+	for (size_t i = 0; i < this->num.size(); i++)
+		res += this->num[i] * long long(pow(10, i));
 	if (this->negative) res *= -1;
 	return res;
 }
