@@ -5,25 +5,48 @@
 #include <algorithm>
 #include <ostream>
 #include <cmath>
-
+int SIZE = 64;
 std::vector<char> dec_to_bin(const BigInt& num) {
-	if (num.get_negative()) throw std::invalid_argument("Negative argument!");
 	BigInt temp = num;
 	std::vector<BigInt> pows = { (BigInt)1, (BigInt)2, (BigInt)4,(BigInt)8 };
 	std::vector<char> bin{ 0,0,0,0 };
-	while (pows[pows.size() - 1] < num) {
+	while (pows.size() < SIZE) {
 		pows.push_back(pows[pows.size() - 1] * BigInt(2));
 		bin.push_back(0);
 	}
 	for (long long i = pows.size() - 1; i >= 0; i--) //go to pows of 2
 	{
+		if (i > SIZE) i = SIZE;
 		if (pows[i] > temp) {
-			bin[i] = 0;
+			if (num.get_negative()) {
+				bin[i] = 1;
+			}
+			else
+				bin[i] = 0;
 		}
 		else {
-			bin[i] = 1;
+			if (num.get_negative()) {
+				bin[i] = 0;
+			}
+			else
+				bin[i] = 1;
 			temp -= BigInt(pows[i]);
 		}
+	}
+	if (num.get_negative()) {
+		for (long long i = pows.size() - 1; i >= 0; i--)
+		{
+			if (bin[i]) {
+				bin[i] = 0;
+			}
+			else {
+				bin[i] = 1; break;
+			}
+		}
+	}
+	for (size_t i = 0; i < bin.size(); i++)
+	{
+		std::cout << std::to_string( bin[i]) << " ";
 	}
 	return bin;
 }
@@ -467,4 +490,10 @@ std::istream& operator>>(std::istream& o, BigInt& i) {
 		}
 	}
 	return o;
+}
+
+int main() {
+	using namespace std;
+	dec_to_bin(BigInt(-1));
+	return 0;
 }

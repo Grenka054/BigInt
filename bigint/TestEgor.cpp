@@ -59,7 +59,7 @@ bool test_twoL(BigInt&, char&, BigInt&);
 bool test_twoI(BigInt&, char&, BigInt&);
 bool test_two(string);
 
-int main() {
+int main2() {
 	bool haveBinary = false;
 	
 	std::cout << "Using long long to check: " << (LONG_LONG_SUPPORT?"True":"False") << endl;
