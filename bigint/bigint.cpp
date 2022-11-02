@@ -89,6 +89,7 @@ BigInt::~BigInt() {
 
 BigInt& BigInt::operator=(const BigInt& num) {
 	if (*this == num) return *this;
+	this->num.clear();
 	this->num = num.num;
 	this->negative = num.negative;
 	return *this;
@@ -206,7 +207,7 @@ BigInt& BigInt::operator+=(const BigInt& num) { //a = a + b return a
 				--this->num[i + 1];
 			}
 		}
-		for (int i = max.num.size() - 1; i >= 0; i--)
+		for (int i = max.num.size() - 1; i >= 1; i--)
 			if (this->num[i] == 0)
 				this->num.pop_back();
 			else break;
@@ -219,6 +220,7 @@ BigInt& BigInt::operator*=(const BigInt& num) {
 	BigInt res{ 0 };
 	for (size_t i = 0; i < this->num.size(); i++)
 	{
+		if(!this->num[i]) continue;
 		BigInt temp{ };
 		temp.num.clear();
 		int tens = 0;
@@ -227,14 +229,15 @@ BigInt& BigInt::operator*=(const BigInt& num) {
 		for (size_t j = 0; j < num.num.size(); j++)
 		{
 			int product = this->num[i] * num.num[j];
-			temp.num.push_back(tens + product % 10);
+			product += tens;
+			temp.num.push_back(product % 10);
 			tens = product / 10;
 		}
 		if (tens) temp.num.push_back(tens);
 		res += temp;
 		temp.num.clear();
 	}
-	res.negative = this->negative ^ num.negative;
+	res.negative = (this->negative != num.negative);
 	*this = res;
 	return *this;
 }
@@ -245,11 +248,35 @@ BigInt& BigInt::operator-=(const BigInt& num) {
 
 BigInt& BigInt::operator/=(const BigInt& num) {
 	if (num == (BigInt)0) throw std::overflow_error("Divide by zero exception");
+	if (*this < num) {
+		*this = BigInt(0);
+		return *this;
+	}
+	// X, Y - целые числа длины n
+	//n = max(размер X, размер Y)
+	//	если n = 1: вернуть X * Y
+	//	X_l = левые n / 2 цифр X
+	//	X_r = правые n / 2 цифр X
+	//	Y_l = левые n / 2 цифр Y
+	//	Y_r = правые n / 2 цифр Y
+	//	Prod1 = Karatsuba_mul(X_l, Y_l)
+	//	Prod2 = Karatsuba_mul(X_r, Y_r)
+	//	Prod3 = Karatsuba_mul(X_l + X_r, Y_l + Y_r)
+	//	вернуть Prod1 * 10 ^ n + (Prod3 - Prod1 - Prod2) * 10 ^ (n / 2) + Prod2
+	long long n = max(this->num.size(), num.num.size());
+	if (n == 1) {
+		*this = int(*this) / int(num);
+	}
+	int X_l
+
+
 
 	BigInt dividend = this->abs(), divisor = num.abs(), res{};
-	for (BigInt i = dividend - divisor; !i.negative; i -= divisor)
+	for (BigInt i = dividend - divisor; !i.negative; i -= divisor) {
 		++res;
-	res.negative = this->negative ^ num.negative;
+	}
+	res.negative = (this->negative != num.negative);
+	if (res.num[res.num.size() - 1] == 0) res.negative = false;
 	*this = res;
 	return *this;
 }
@@ -267,6 +294,7 @@ BigInt& BigInt::operator^=(const BigInt& num) {
 BigInt& BigInt::operator%=(const BigInt& num) {
 	bool neg = this->negative;
 	*this -= (*this / num) * num;
+	if (!this->num[0]) this->negative = false;
 	this->negative = neg;
 	return *this;
 }
@@ -390,13 +418,6 @@ BigInt BigInt::abs() const {
 	return res;
 }
 
-std::ostream& operator<<(std::ostream& o, const BigInt& i) {
-	if (i.get_negative()) std::cout << "-";
-	for (char j = i.get_num().size() - 1; j >= 0; j--)
-		std::cout << +i.get_num()[j];
-	return o;
-}
-
 BigInt operator+(const BigInt& a, const BigInt& b) { //with +=, copy BigInt
 	BigInt temp = a;
 	return temp += b;
@@ -435,4 +456,24 @@ BigInt operator&(const BigInt& a, const BigInt& b) {
 BigInt operator|(const BigInt& a, const BigInt& b) {
 	BigInt temp = a;
 	return temp |= b;
+}
+
+std::ostream& operator<<(std::ostream& o, const BigInt& i) {
+	if (i.get_negative()) o << "-";
+	for (char j = i.get_num().size() - 1; j >= 0; j--)
+		o << +i.get_num()[j];
+	return o;
+}
+std::istream& operator>>(std::istream& o, BigInt& i) {
+	std::string str;
+	while (true) {
+		o >> str;
+		if (!str.compare("exit")) break;
+		try { i = BigInt(str); break; }
+		catch (std::invalid_argument) {
+			std::cerr << "Error: String contains extra characters\n"
+				"Enter \"exit\" to skip reading or try again:  ";
+		}
+	}
+	return o;
 }

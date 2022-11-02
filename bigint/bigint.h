@@ -83,3 +83,4 @@ BigInt operator|(const BigInt&, const BigInt&); // throw
 
 
 std::ostream& operator<<(std::ostream& o, const BigInt& i);
+std::istream& operator>>(std::istream& o, BigInt& i);
