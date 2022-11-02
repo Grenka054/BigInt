@@ -15,9 +15,9 @@ public:
 	BigInt(long long);
 	BigInt(std::string); // бросать исключение std::invalid_argument при ошибке
 	BigInt(const BigInt&);
-
 	~BigInt();
 	/* assignment operator */
+	
 	BigInt& operator=(const BigInt&);  //возможно присваивание самому себе!
 
 	/* bitwise NOT */

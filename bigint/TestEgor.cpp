@@ -14,8 +14,7 @@ constexpr int CNT_OF_REPEATS_BENCHMARKING = 50000;
 constexpr int CNT_OF_ONE_BLOCK_BENCHMARKING = 1000;
 
 //Available operations { '+', '-', '*', '/', '%', '|', '&', '^' }
-//std::vector<char> oper_lst { '+', '-', '*', '/', '%', '|', '&', '^' };
-std::vector<char> oper_lst { '+', '-', '*', '/', '%' };
+std::vector<char> oper_lst { '+', '-', '*', '/', '%', '|', '&', '^' };
 //Available signs { 1, -1};
 std::vector<int> sign_lst {1, -1};
 #define LONG_LONG_SUPPORT true
@@ -61,9 +60,8 @@ bool test_twoI(BigInt&, char&, BigInt&);
 bool test_two(string);
 
 int main() {
-
 	bool haveBinary = false;
-
+	
 	std::cout << "Using long long to check: " << (LONG_LONG_SUPPORT?"True":"False") << endl;
 	std::cout << "Number of operation calls: " << CNT_OF_REPEATS_BENCHMARKING << endl;
 	std::cout << "Number of operation calls in block: " << CNT_OF_ONE_BLOCK_BENCHMARKING << endl;

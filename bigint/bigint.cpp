@@ -8,13 +8,23 @@
 
 std::vector<char> dec_to_bin(const BigInt& num) {
 	if (num.get_negative()) throw std::invalid_argument("Negative argument!");
-	BigInt b_int = num.abs();
-	std::vector<char> bin;
-	while (b_int != (BigInt)0) {
-		bin.push_back(b_int.get_num()[0] % 2);
-		b_int /= (BigInt)2;
+	BigInt temp = num;
+	std::vector<BigInt> pows = { (BigInt)1, (BigInt)2, (BigInt)4,(BigInt)8 };
+	std::vector<char> bin{ 0,0,0,0 };
+	while (pows[pows.size() - 1] < num) {
+		pows.push_back(pows[pows.size() - 1] * BigInt(2));
+		bin.push_back(0);
 	}
-	if (bin.size() == 0) bin.push_back(0);
+	for (long long i = pows.size() - 1; i >= 0; i--) //go to pows of 2
+	{
+		if (pows[i] > temp) {
+			bin[i] = 0;
+		}
+		else {
+			bin[i] = 1;
+			temp -= BigInt(pows[i]);
+		}
+	}
 	return bin;
 }
 
@@ -24,7 +34,7 @@ BigInt bin_to_dec(const std::vector<char> num) {
 	for (size_t i = 1; i < num.size(); i++)
 	{
 		pow *= (BigInt)2;
-		if(num[i]) b_int += pow;
+		if (num[i]) b_int += pow;
 	}
 	return b_int;
 }
@@ -220,7 +230,7 @@ BigInt& BigInt::operator*=(const BigInt& num) {
 	BigInt res{ 0 };
 	for (size_t i = 0; i < this->num.size(); i++)
 	{
-		if(!this->num[i]) continue;
+		if (!this->num[i]) continue;
 		BigInt temp{ };
 		temp.num.clear();
 		int tens = 0;
@@ -248,29 +258,10 @@ BigInt& BigInt::operator-=(const BigInt& num) {
 
 BigInt& BigInt::operator/=(const BigInt& num) {
 	if (num == (BigInt)0) throw std::overflow_error("Divide by zero exception");
-	if (*this < num) {
+	if (this->abs() < num.abs()) {
 		*this = BigInt(0);
 		return *this;
 	}
-	// X, Y - целые числа длины n
-	//n = max(размер X, размер Y)
-	//	если n = 1: вернуть X * Y
-	//	X_l = левые n / 2 цифр X
-	//	X_r = правые n / 2 цифр X
-	//	Y_l = левые n / 2 цифр Y
-	//	Y_r = правые n / 2 цифр Y
-	//	Prod1 = Karatsuba_mul(X_l, Y_l)
-	//	Prod2 = Karatsuba_mul(X_r, Y_r)
-	//	Prod3 = Karatsuba_mul(X_l + X_r, Y_l + Y_r)
-	//	вернуть Prod1 * 10 ^ n + (Prod3 - Prod1 - Prod2) * 10 ^ (n / 2) + Prod2
-	long long n = max(this->num.size(), num.num.size());
-	if (n == 1) {
-		*this = int(*this) / int(num);
-	}
-	int X_l
-
-
-
 	BigInt dividend = this->abs(), divisor = num.abs(), res{};
 	for (BigInt i = dividend - divisor; !i.negative; i -= divisor) {
 		++res;
