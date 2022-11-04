@@ -3,33 +3,41 @@
 #include <cstring>
 #include <vector>
 #include <algorithm>
-#include <ostream>
+#include <iostream>
 #include <cmath>
-#include <cassert>
-int SIZE = 64;
+
+long long BigInt::BIT_GRID_SIZE = 256;
+
+void BigInt::set_grid_size(long long size) {
+	BIT_GRID_SIZE = size;
+}
+
+long long BigInt::get_grid_size() {
+	return BIT_GRID_SIZE;
+}
+
 std::vector<char> dec_to_bin(const BigInt& num) {
-	BigInt temp = num;
-	std::vector<BigInt> pows = { (BigInt)1, (BigInt)2, (BigInt)4,(BigInt)8 };
-	std::vector<char> bin{ 0,0,0,0 };
-	while (pows.size() < SIZE) {
+	BigInt temp = num.abs();
+	static std::vector<BigInt> pows = { BigInt(1) };
+	std::vector<char> bin(BigInt::get_grid_size());
+	while (pows.size() < BigInt::get_grid_size()) {
 		pows.push_back(pows[pows.size() - 1] * BigInt(2));
-		bin.push_back(0);
 	}
-	for (long long i = pows.size() - 1; i >= 0; i--) //go to pows of 2
+	for (auto i = BigInt::get_grid_size() - 1; i >= 0; i--) //go to pows of 2
 	{
-		if (i > SIZE) i = SIZE;
 		if (pows[i] > temp) {
-			if (num.get_negative()) bin[i] = 1;
+			if (num.get_negative()) bin[i] = 1; //neg
 			else bin[i] = 0;
 		}
 		else {
-			if (num.get_negative()) bin[i] = 0;
+			if (num.get_negative()) bin[i] = 0; //neg
 			else bin[i] = 1;
 			temp -= BigInt(pows[i]);
 		}
 	}
+	if (temp > BigInt(0)) std::cerr << "\nWARNING!" << std::string(num) << " does not fit on the bit grid. Possible data loss\n";
 	if (num.get_negative()) {
-		for (long long i = pows.size() - 1; i >= 0; i--)
+		for (long long i = 0; i < pows.size(); i++)
 		{
 			if (bin[i])	bin[i] = 0;
 			else { bin[i] = 1; break; }
@@ -38,14 +46,30 @@ std::vector<char> dec_to_bin(const BigInt& num) {
 	return bin;
 }
 
-BigInt bin_to_dec(const std::vector<char> num) {
-	std::vector<char> bin = num;
+BigInt bin_to_dec(std::vector<char> num) {
+	bool negatvie = false;
+	if (num[num.size() - 1] == 1) {
+		negatvie = true;
+		//-1
+		for (long long i = 0; i < num.size(); i++)
+		{
+			if (num[i]) { num[i] = 0; break; }
+			else num[i] = 1;
+		}
+		//neg
+		for (long long i = num.size() - 1; i >= 0; i--)
+		{
+			if (num[i]) num[i] = 0;
+			else num[i] = 1;
+		}
+	}
 	BigInt b_int{ num[0] }, pow{ 1 };
 	for (size_t i = 1; i < num.size(); i++)
 	{
 		pow *= (BigInt)2;
 		if (num[i]) b_int += pow;
 	}
+	if (negatvie) b_int *= BigInt(-1);
 	return b_int;
 }
 
@@ -172,13 +196,13 @@ BigInt& BigInt::operator--() {
 	return *this;
 }
 
-const BigInt BigInt::operator--(int) const { //const мешает справа
+const BigInt BigInt::operator--(int) const {
 	BigInt temp = *this;
 	--(const_cast<BigInt&>(*this));
 	return temp;
 }
 
-BigInt& BigInt::operator+=(const BigInt& num) { //a = a + b return a
+BigInt& BigInt::operator+=(const BigInt& num) {
 	if (this->negative == num.negative) {
 		int ten = 0, i;
 		for (i = 0; i < this->num.size(); ++i) {
@@ -217,9 +241,7 @@ BigInt& BigInt::operator+=(const BigInt& num) { //a = a + b return a
 			if (i >= this->num.size()) this->num.push_back(0);
 		}
 		for (size_t i = 0; i < max.num.size(); i++)
-		{
 			this->num[i] = max.num[i] - min.num[i];
-		}
 		for (size_t i = 0; i < max.num.size() - 1; i++)
 		{
 			if (this->num[i] < 0) {
@@ -227,7 +249,7 @@ BigInt& BigInt::operator+=(const BigInt& num) { //a = a + b return a
 				--this->num[i + 1];
 			}
 		}
-		for (int i = max.num.size() - 1; i >= 1; i--)
+		for (long long i = max.num.size() - 1; i >= 1; i--)
 			if (this->num[i] == 0)
 				this->num.pop_back();
 			else break;
@@ -258,6 +280,11 @@ BigInt& BigInt::operator*=(const BigInt& num) {
 		temp.num.clear();
 	}
 	res.negative = (this->negative != num.negative);
+	while(res.num.size() > 1) //000 -> 0
+	{
+		if (!res.num[res.num.size() - 1]) res.num.erase(res.num.begin());
+		else break;
+	}
 	*this = res;
 	return *this;
 }
@@ -267,8 +294,8 @@ BigInt& BigInt::operator-=(const BigInt& num) {
 }
 
 BigInt& BigInt::operator/=(const BigInt& num) {
-	if (num == (BigInt)0) throw std::overflow_error("Divide by zero exception");
-	if (this->abs() < num.abs()) {
+	if (num == (BigInt)0) throw std::overflow_error("Divide by zero");
+	if (this->abs() < num.abs()) { //faster
 		*this = BigInt(0);
 		return *this;
 	}
@@ -278,11 +305,9 @@ BigInt& BigInt::operator/=(const BigInt& num) {
 	for (int i = 0; i < null_amount; i++)
 		pow10 *= BigInt(10);
 	while (divisor * pow10 > dividend) {
-		--null_amount; 
+		--null_amount;
 		pow10.num.erase(pow10.num.begin());
-		if (pow10.num.empty()) {
-			pow10.num.push_back(0); break;
-		}
+		if (pow10.num.empty()) break;
 	}
 	while (dividend > divisor) {
 		BigInt temp;
@@ -299,9 +324,6 @@ BigInt& BigInt::operator/=(const BigInt& num) {
 			pow10.num.push_back(0); break;
 		}
 	}
-	//for (BigInt i = dividend - divisor; !i.negative; i -= divisor) {
-	//	++res;
-	//}
 	res.negative = (this->negative != num.negative);
 	if (res.num[res.num.size() - 1] == 0) res.negative = false;
 	*this = res;
@@ -368,7 +390,7 @@ bool BigInt::operator!=(const BigInt& num) const {
 bool BigInt::operator<(const BigInt& num) const {
 	if (this->negative == num.negative) {
 		if (this->num.size() == num.num.size())
-			for (int i = num.num.size() - 1; i >= 0; i--) {
+			for (long long i = num.num.size() - 1; i >= 0; i--) {
 				if (this->num[i] > num.num[i])
 					return false;
 				if (this->num[i] < num.num[i])
@@ -383,19 +405,7 @@ bool BigInt::operator<(const BigInt& num) const {
 }
 
 bool BigInt::operator>(const BigInt& num) const {
-	if (this->negative == num.negative) {
-		if (this->num.size() == num.num.size())
-			for (int i = num.num.size() - 1; i >= 0; i--) {
-				if (this->num[i] < num.num[i])
-					return false;
-				if (this->num[i] > num.num[i])
-					return true;
-			}
-		else return (this->negative && this->num.size() < num.num.size()) ||
-			(!this->negative && this->num.size() > num.num.size());
-	}
-	if (num.negative) return true;
-	return false;
+	return(num < *this);
 }
 
 bool BigInt::operator<=(const BigInt& num) const {
@@ -429,10 +439,8 @@ BigInt::operator long long int() const {
 BigInt::operator std::string() const {
 	std::string res = "";
 	if (this->negative) res = "-";
-	for (int i = this->num.size() - 1; i >= 0; i--)
-	{
+	for (long long i = this->num.size() - 1; i >= 0; i--)
 		res += this->num[i] + '0';
-	}
 	return res;
 }
 
@@ -487,10 +495,11 @@ BigInt operator|(const BigInt& a, const BigInt& b) {
 
 std::ostream& operator<<(std::ostream& o, const BigInt& i) {
 	if (i.get_negative()) o << "-";
-	for (char j = i.get_num().size() - 1; j >= 0; j--)
+	for (long long j = i.get_num().size() - 1; j >= 0; j--)
 		o << +i.get_num()[j];
 	return o;
 }
+
 std::istream& operator>>(std::istream& o, BigInt& i) {
 	std::string str;
 	while (true) {
@@ -503,10 +512,4 @@ std::istream& operator>>(std::istream& o, BigInt& i) {
 		}
 	}
 	return o;
-}
-
-int main2() {
-	using namespace std;
-
-	return 0;
 }

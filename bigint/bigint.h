@@ -13,7 +13,7 @@ public:
 	BigInt();
 	BigInt(int);
 	BigInt(long long);
-	BigInt(std::string); // бросать исключение std::invalid_argument при ошибке
+	BigInt(std::string); // throw std::invalid_argument
 	BigInt(const BigInt&);
 	~BigInt();
 	/* assignment operator */
@@ -34,10 +34,10 @@ public:
 	BigInt& operator*=(const BigInt&);
 	BigInt& operator-=(const BigInt&);
 	BigInt& operator/=(const BigInt&); // throw
-	BigInt& operator^=(const BigInt&); // throw
 	BigInt& operator%=(const BigInt&); // throw
-	BigInt& operator&=(const BigInt&); // throw
-	BigInt& operator|=(const BigInt&); // throw
+	BigInt& operator^=(const BigInt&);
+	BigInt& operator&=(const BigInt&);
+	BigInt& operator|=(const BigInt&);
 
 	/* unary operations */
 	BigInt operator+() const;  // unary +
@@ -66,21 +66,27 @@ public:
 	std::vector<char> get_num() const;
 	bool get_negative() const;
 
+	static void set_grid_size(long long size);
+
+	static long long get_grid_size();
+
 private:
 	std::vector<char> num;
 	bool negative;
+	static long long BIT_GRID_SIZE;
 };
 
 /* operations */
 BigInt operator+(const BigInt&, const BigInt&);
 BigInt operator-(const BigInt&, const BigInt&);
 BigInt operator*(const BigInt&, const BigInt&);
-BigInt operator/(const BigInt&, const BigInt&); // throw
-BigInt operator^(const BigInt&, const BigInt&); // throw
-BigInt operator%(const BigInt&, const BigInt&); // throw
-BigInt operator&(const BigInt&, const BigInt&); // throw
-BigInt operator|(const BigInt&, const BigInt&); // throw
+BigInt operator/(const BigInt&, const BigInt&);
+BigInt operator^(const BigInt&, const BigInt&);
+BigInt operator%(const BigInt&, const BigInt&);
+BigInt operator&(const BigInt&, const BigInt&);
+BigInt operator|(const BigInt&, const BigInt&);
 
 
 std::ostream& operator<<(std::ostream& o, const BigInt& i);
 std::istream& operator>>(std::istream& o, BigInt& i);
+
