@@ -14,9 +14,9 @@ constexpr int CNT_OF_REPEATS_BENCHMARKING = 50000;
 constexpr int CNT_OF_ONE_BLOCK_BENCHMARKING = 1000;
 
 //Available operations { '+', '-', '*', '/', '%', '|', '&', '^' }
-std::vector<char> oper_lst { '+', '-', '*', '/', '%', '|', '&', '^' };
+std::vector<char> oper_lst{ '+', '-', '*', '/', '%', '|', '&', '^' };
 //Available signs { 1, -1};
-std::vector<int> sign_lst {1, -1};
+std::vector<int> sign_lst{ 1, -1 };
 #define LONG_LONG_SUPPORT true
 
 #define CALCULATE
@@ -59,10 +59,10 @@ bool test_twoL(BigInt&, char&, BigInt&);
 bool test_twoI(BigInt&, char&, BigInt&);
 bool test_two(string);
 
-int main2() {
-	bool haveBinary = false;
-	
-	std::cout << "Using long long to check: " << (LONG_LONG_SUPPORT?"True":"False") << endl;
+int main() {
+	//bool haveBinary = false;
+
+	std::cout << "Using long long to check: " << (LONG_LONG_SUPPORT ? "True" : "False") << endl;
 	std::cout << "Number of operation calls: " << CNT_OF_REPEATS_BENCHMARKING << endl;
 	std::cout << "Number of operation calls in block: " << CNT_OF_ONE_BLOCK_BENCHMARKING << endl;
 	std::cout << "Operations to be checked: ";
@@ -72,12 +72,12 @@ int main2() {
 	std::cout << endl;
 	if (exsistOper('&') || exsistOper('|') || exsistOper('^')) {
 		std::cout << "[Warning] Binary operations are checked only on positive numbers" << endl;
-		haveBinary = true;
+		//haveBinary = true;
 	}
 	std::cout << "Checking using positive numbers: " << (exsistSign(1) ? "True" : "False") << endl;
 	std::cout << "Checking using negative numbers: " << (exsistSign(-1) ? "True" : "False") << endl;
 	std::cout << endl << endl;
-	
+
 	std::cout << "Press enter to start" << endl;
 	cin.get();
 
@@ -104,7 +104,7 @@ int main2() {
 			int fstNum, sndNum;
 			LOG(std::cout << "(" << test_num << ") ";)
 
-			stringstream expr_s;
+				stringstream expr_s;
 
 			char oper = oper_lst[rand() % oper_lst.size()];
 
@@ -131,10 +131,10 @@ int main2() {
 			if ((oper == '/') || (oper == '&')) {
 				sndNum += 1;
 			}
-			if (!(oper == '&' || oper == '|' || oper == '^')){
-				fstNum *= sign_lst[rand() % sign_lst.size()];
-				sndNum *= sign_lst[rand() % sign_lst.size()];
-			}
+			//if (!(oper == '&' || oper == '|' || oper == '^')){
+			fstNum *= sign_lst[rand() % sign_lst.size()];
+			sndNum *= sign_lst[rand() % sign_lst.size()];
+			//}
 
 			expr_s << fstNum << ' ' << oper << ' ' << sndNum;
 
@@ -198,13 +198,13 @@ int main2() {
 bool test_two(string expr) {
 	LOG(std::cout << "TESTING this: " << expr;)
 
-	char* pos = strtok((char*)expr.c_str(), " ");
+		char* pos = strtok((char*)expr.c_str(), " ");
 	BigInt* a = new BigInt((string(pos)));
 	pos = strtok(NULL, " ");
 	char oper = *pos;
 	pos = strtok(NULL, " ");
 	BigInt* b = new BigInt((string(pos)));
-	
+
 	bool is_correct = CHECKEXPR(*a, oper, *b);
 
 	delete a;
@@ -259,7 +259,7 @@ bool test_twoL(BigInt& a, char& oper, BigInt& b) {
 	LOG(std::cout << " = [" << my_ans << "] / {" << correct_ans << "} ";
 	std::cout << (is_correct ? "CORRECT" : "!!WRONG!!");
 	std::cout << endl;)
-	return is_correct;
+		return is_correct;
 }
 
 bool test_twoI(BigInt& a, char& oper, BigInt& b) {

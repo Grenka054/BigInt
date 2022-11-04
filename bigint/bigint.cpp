@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <ostream>
 #include <cmath>
+#include <cassert>
 int SIZE = 64;
 std::vector<char> dec_to_bin(const BigInt& num) {
 	BigInt temp = num;
@@ -18,35 +19,21 @@ std::vector<char> dec_to_bin(const BigInt& num) {
 	{
 		if (i > SIZE) i = SIZE;
 		if (pows[i] > temp) {
-			if (num.get_negative()) {
-				bin[i] = 1;
-			}
-			else
-				bin[i] = 0;
+			if (num.get_negative()) bin[i] = 1;
+			else bin[i] = 0;
 		}
 		else {
-			if (num.get_negative()) {
-				bin[i] = 0;
-			}
-			else
-				bin[i] = 1;
+			if (num.get_negative()) bin[i] = 0;
+			else bin[i] = 1;
 			temp -= BigInt(pows[i]);
 		}
 	}
 	if (num.get_negative()) {
 		for (long long i = pows.size() - 1; i >= 0; i--)
 		{
-			if (bin[i]) {
-				bin[i] = 0;
-			}
-			else {
-				bin[i] = 1; break;
-			}
+			if (bin[i])	bin[i] = 0;
+			else { bin[i] = 1; break; }
 		}
-	}
-	for (size_t i = 0; i < bin.size(); i++)
-	{
-		std::cout << std::to_string( bin[i]) << " ";
 	}
 	return bin;
 }
@@ -286,12 +273,46 @@ BigInt& BigInt::operator/=(const BigInt& num) {
 		return *this;
 	}
 	BigInt dividend = this->abs(), divisor = num.abs(), res{};
-	for (BigInt i = dividend - divisor; !i.negative; i -= divisor) {
-		++res;
+	long long null_amount = this->num.size() - num.num.size();
+	BigInt pow10{ 1 };
+	for (int i = 0; i < null_amount; i++)
+		pow10 *= BigInt(10);
+	while (divisor * pow10 > dividend) {
+		--null_amount; 
+		pow10.num.erase(pow10.num.begin());
+		if (pow10.num.empty()) {
+			pow10.num.push_back(0); break;
+		}
 	}
+	while (dividend > divisor) {
+		BigInt temp;
+		for (BigInt x = 1; x <= BigInt(10); x++)
+		{
+			if (pow10 * divisor * x > dividend) {
+				temp = (x - BigInt(1)) * pow10; break;
+			}
+		}
+		dividend -= temp * divisor;
+		res += temp;
+		pow10.num.erase(pow10.num.begin());
+		if (pow10.num.empty()) {
+			pow10.num.push_back(0); break;
+		}
+	}
+	//for (BigInt i = dividend - divisor; !i.negative; i -= divisor) {
+	//	++res;
+	//}
 	res.negative = (this->negative != num.negative);
 	if (res.num[res.num.size() - 1] == 0) res.negative = false;
 	*this = res;
+	return *this;
+}
+
+BigInt& BigInt::operator%=(const BigInt& num) {
+	bool neg = this->negative;
+	*this -= (*this / num) * num;
+	if (!this->num[this->num.size() - 1]) this->negative = false;
+	else this->negative = neg;
 	return *this;
 }
 
@@ -302,14 +323,6 @@ BigInt& BigInt::operator^=(const BigInt& num) {
 		thisBin[i] ^= numBin[i];
 	*this = bin_to_dec(thisBin);
 	thisBin.clear(); numBin.clear();
-	return *this;
-}
-
-BigInt& BigInt::operator%=(const BigInt& num) {
-	bool neg = this->negative;
-	*this -= (*this / num) * num;
-	if (!this->num[0]) this->negative = false;
-	this->negative = neg;
 	return *this;
 }
 
@@ -492,8 +505,8 @@ std::istream& operator>>(std::istream& o, BigInt& i) {
 	return o;
 }
 
-int main() {
+int main2() {
 	using namespace std;
-	dec_to_bin(BigInt(-1));
+
 	return 0;
 }
