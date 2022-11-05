@@ -58,7 +58,7 @@ bool test_twoI(BigInt&, char&, BigInt&);
 bool test_two(string);
 
 
-#define StreamRead
+//#define StreamRead
 void test_extra()
 {
 	BigInt temp;
@@ -74,36 +74,33 @@ void test_extra()
 	cin >> temp;
 	cout << "You have entered a " << string(temp) << endl;
 #endif // StreamRead
-	cout << "Bitwise operations:" << endl;
-	a = 780505, b = 98;
-	temp = BigInt(a) | BigInt(b); // 18 sec
-	assert(temp == BigInt(a | b));
-	a = 100, b = 60;
-	temp = BigInt(a) | BigInt(b);
-	res = a | b;
-	assert(temp == BigInt(res));
-	temp = BigInt(a) & BigInt(b);
-	res = a & b;
-	assert(temp == BigInt(res));
-	temp = BigInt(a) ^ BigInt(b);
-	res = a ^ b;
-	assert(temp == BigInt(res));
-	a = 0, b = 0;
-	res = a | b;
-	temp = BigInt(a) | BigInt(b);
-	assert(temp == BigInt(res));
-	temp = BigInt(a) & BigInt(b);
-	res = a & b;
-	assert(temp == BigInt(res));
-	temp = BigInt(a) ^ BigInt(b);
-	res = a ^ b;
-	assert(temp == BigInt(res));
-	a = -2, b = 1;
-	res = a | b;
-	temp = BigInt(a) | BigInt(b);
-	assert(temp == BigInt(res));
+	cout << "Relational operations:" << endl;
+	assert((BigInt)2 < (BigInt)18);
+	assert((BigInt)"1999" < (BigInt)"8000");
+	assert(!((BigInt)"20" < (BigInt)"-1999"));
+	assert(!((BigInt)"200000" < (BigInt)"-1999"));
+	assert((BigInt)"-200000" < (BigInt)"-1999");
+	assert(!((BigInt)"-200000" < (BigInt)"-99991999"));
+	assert((BigInt)"-200000" < (BigInt)"0");
+	assert(!((BigInt)"0" < (BigInt)"0"));
+
+	assert((BigInt)2 > (BigInt)-18);
+	assert((BigInt)"20" > (BigInt)"-1999");
+	assert((BigInt)"200000" > (BigInt)"-1999");
+	assert(!((BigInt)"-200000" > (BigInt)"-1999"));
+	assert((BigInt)"-200000" > (BigInt)"-99991999");
+	assert(!((BigInt)"-200000" > (BigInt)"0"));
+	assert(!((BigInt)"0" > (BigInt)"0"));
+
+	assert((BigInt)"-200000" <= (BigInt)"0");
+	assert((BigInt)"0" <= (BigInt)"0");
+	assert(!((BigInt)"-200000" >= (BigInt)"0"));
+	assert((BigInt)"0" >= (BigInt)"0");
+	assert(string((BigInt)"20") == "20");
+	assert(string((BigInt)"-205478") == "-205478");
 	cout << "Done!" << endl;
 	cout << "* operations:" << endl;
+	assert(BigInt(-16944 * 0) == BigInt(-16944) * BigInt(0));
 	assert((BigInt)8166 * (BigInt)0 == BigInt(8166 * 0));
 	assert((BigInt)0 * (BigInt)0 == BigInt(0 * 0));
 	assert((BigInt)0 * (BigInt)24 == BigInt(0 * 24));
@@ -118,6 +115,9 @@ void test_extra()
 	assert(string(BigInt("-125726606") * BigInt("2056734911")) == "-258586299801742066");
 	cout << "Done!" << endl;
 	cout << "/ operations:" << endl;
+	assert((BigInt)1918780091 / (BigInt)-1 == (BigInt)-1918780091);
+	assert((BigInt)1639060271 / (BigInt)1 == (BigInt)1639060271);
+	assert((BigInt)0 / (BigInt)18 == (BigInt)0);
 	assert((BigInt)0 / (BigInt)18 == (BigInt)0);
 	assert((BigInt)-132 / (BigInt)18 == (BigInt)-7);
 	assert((BigInt)132 / (BigInt)7 == (BigInt)18);
@@ -210,30 +210,34 @@ void test_extra()
 	assert((BigInt)"159155568" - (BigInt)"250000534" == (BigInt)"-90844966");
 	assert((BigInt)"-65416545413365116514" - (BigInt)"31" == (BigInt)"-65416545413365116545");
 	cout << "Done!" << endl;
-	cout << "Relational operations:" << endl;
-	assert((BigInt)2 < (BigInt)18);
-	assert((BigInt)"1999" < (BigInt)"8000");
-	assert(!((BigInt)"20" < (BigInt)"-1999"));
-	assert(!((BigInt)"200000" < (BigInt)"-1999"));
-	assert((BigInt)"-200000" < (BigInt)"-1999");
-	assert(!((BigInt)"-200000" < (BigInt)"-99991999"));
-	assert((BigInt)"-200000" < (BigInt)"0");
-	assert(!((BigInt)"0" < (BigInt)"0"));
-
-	assert((BigInt)2 > (BigInt)-18);
-	assert((BigInt)"20" > (BigInt)"-1999");
-	assert((BigInt)"200000" > (BigInt)"-1999");
-	assert(!((BigInt)"-200000" > (BigInt)"-1999"));
-	assert((BigInt)"-200000" > (BigInt)"-99991999");
-	assert(!((BigInt)"-200000" > (BigInt)"0"));
-	assert(!((BigInt)"0" > (BigInt)"0"));
-
-	assert((BigInt)"-200000" <= (BigInt)"0");
-	assert((BigInt)"0" <= (BigInt)"0");
-	assert(!((BigInt)"-200000" >= (BigInt)"0"));
-	assert((BigInt)"0" >= (BigInt)"0");
-	assert(string((BigInt)"20") == "20");
-	assert(string((BigInt)"-205478") == "-205478");
+	cout << "Bitwise operations:" << endl;
+	a = 780505, b = 98;
+	temp = BigInt(a) | BigInt(b); // 18 sec
+	assert(temp == BigInt(a | b));
+	a = 100, b = 60;
+	temp = BigInt(a) | BigInt(b);
+	res = a | b;
+	assert(temp == BigInt(res));
+	temp = BigInt(a) & BigInt(b);
+	res = a & b;
+	assert(temp == BigInt(res));
+	temp = BigInt(a) ^ BigInt(b);
+	res = a ^ b;
+	assert(temp == BigInt(res));
+	a = 0, b = 0;
+	res = a | b;
+	temp = BigInt(a) | BigInt(b);
+	assert(temp == BigInt(res));
+	temp = BigInt(a) & BigInt(b);
+	res = a & b;
+	assert(temp == BigInt(res));
+	temp = BigInt(a) ^ BigInt(b);
+	res = a ^ b;
+	assert(temp == BigInt(res));
+	a = -2, b = 1;
+	res = a | b;
+	temp = BigInt(a) | BigInt(b);
+	assert(temp == BigInt(res));
 	cout << "Done!" << endl;
 }
 
@@ -371,12 +375,42 @@ bool test_twoL(BigInt& a, char& oper, BigInt& b) {
 		my_ans = a * b;
 		break;
 	case('/'):
-		correct_ans = (long long)a / (long long)b;
-		my_ans = a / b;
+		try {
+			my_ans = a / b;
+			correct_ans = (long long)a / (long long)b;
+		}
+		catch (overflow_error) {
+			if (b == BigInt(0)) {
+				is_correct = true;
+				LOG(std::cout << " = [ERROR] / {ERROR} ");
+			}
+			else {
+				correct_ans = a / b;
+				LOG(std::cout << " = [ERROR] / {" << correct_ans << "} ";
+			}
+			std::cout << (is_correct ? "CORRECT" : "!!WRONG!!");
+			std::cout << endl;)
+					return is_correct;
+		}
 		break;
 	case('%'):
-		correct_ans = (long long)a % (long long)b;
-		my_ans = a % b;
+		try {
+			my_ans = a % b;
+			correct_ans = (long long)a % (long long)b;
+		}
+		catch (overflow_error) {
+			if (b == BigInt(0)) {
+				is_correct = true;
+				LOG(std::cout << " = [ERROR] / {ERROR} ");
+			}
+			else {
+				correct_ans = a % b;
+				LOG(std::cout << " = [ERROR] / {" << correct_ans << "} ";
+			}
+			std::cout << (is_correct ? "CORRECT" : "!!WRONG!!");
+			std::cout << endl;)
+					return is_correct;
+		}
 		break;
 	case('|'):
 		correct_ans = (long long)a | (long long)b;
